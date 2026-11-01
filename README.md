@@ -41,13 +41,32 @@ python app.py
 > ⚠️ **本地默认管理员密码：123456（仅限本地学习用）。**
 > 部署上线前，务必在部署平台设置环境变量 `ADMIN_PASSWORD` 换成你自己的强密码；代码里只有密码的哈希，不存明文。
 
-## 部署（Render，待完善）
+## 部署（PythonAnywhere）
 
-1. 在 Render 创建 Web Service，连接本仓库
-2. 环境变量：
-   - `PORT`：Render 自动提供（代码已兼容）
-   - `ADMIN_PASSWORD`：你的管理员密码（不设置则沿用默认 123456，线上不安全）
-3. 构建/启动命令：见部署阶段补充（gunicorn / flask）
+线上地址：https://yzygit.pythonanywhere.com
+
+1. 注册 PythonAnywhere（免费版即可）
+2. 上传代码到 `/home/yzygit/student-cms-web/`
+3. 创建 Web App（Manual configuration，Python 3.10）
+4. 创建虚拟环境并安装依赖：
+
+   ```bash
+   mkvirtualenv --python=python3.10 myenv
+   pip install flask openpyxl
+   ```
+
+5. 编辑 WSGI 配置文件（`/var/www/yzygit_pythonanywhere_com_wsgi.py`）：
+
+   ```python
+   import os, sys
+   project_home = u'/home/yzygit/student-cms-web'
+   if project_home not in sys.path:
+       sys.path.insert(0, project_home)
+   os.environ['ADMIN_PASSWORD'] = '你的线上密码'  # 不设置则默认 123456
+   from app import app as application
+   ```
+
+6. 回到 Web 页面点 **Reload**，访问 https://yzygit.pythonanywhere.com
 
 ---
 
