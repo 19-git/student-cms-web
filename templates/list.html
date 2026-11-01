@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}学生列表{% endblock %}
+{% block content %}
+<h2>学生列表（共 {{ total }} 人，第 {{ page }}/{{ pages }} 页）</h2>
+
+<!-- Excel 工具区：导出登录即可用；导入仅管理员 -->
+<div style="margin-bottom:14px">
+    <a class="btn btn-primary" href="{{ url_for('export_excel') }}">导出 Excel</a>
+    {% if session.get('role') == 'admin' %}
+    <form method="post" action="{{ url_for('import_excel') }}" enctype="multipart/form-data" style="display:inline">
+        <input type="file" name="file" accept=".xlsx">
+        <button type="submit" class="btn btn-default">导入 Excel</button>
+    </form>
+    {% endif %}
+</div>
+
+{% if students %}
+<table>
+    <tr>
+        <th>姓名</th><th>性别</th><th>年龄</th><th>电话</th><th>描述</th>
+        {% if session.get('role') == 'admin' %}<th>操作</th>{% endif %}
+    </tr>
+    {% for stu in students %}
+    <tr>
+        <td>{{ stu.name }}</td>
+        <td>{{ stu.gender }}</td>
+        <td>{{ stu.age }}</td>
+        <td>{{ stu.phone }}</td>
+        <td>{{ stu.desc }}</td>
+        {% if session.get('role') == 'admin' %}
+        <td>
+            <a class="btn btn-default" href="{{ url_for('edit_student', name=stu.name) }}">修改</a>
+            <form method="post" action="{{ url_for('delete_student', name=stu.name) }}" style="display:inline">
+                <button type="submit" class="btn btn-danger"
+                        onclick="return confirm('确定删除 {{ stu.name }} 吗？')">删除</button>
+            </form>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- 分页导航：上一页 / 页码 / 下一页 -->
+<div class="pagination">
+    {% if page > 1 %}
+        <a href="{{ url_for('student_list', page=page-1) }}">上一页</a>
+    {% endif %}
+    {% for p in range(1, pages+1) %}
+        {% if p == page %}
+            <span class="current">{{ p }}</span>
+        {% else %}
+            <a href="{{ url_for('student_list', page=p) }}">{{ p }}</a>
+        {% endif %}
+    {% endfor %}
+    {% if page < pages %}
+        <a href="{{ url_for('student_list', page=page+1) }}">下一页</a>
+    {% endif %}
+</div>
+{% else %}
+<p>还没有学生数据，请先添加~</p>
+{% endif %}
+{% endblock %}

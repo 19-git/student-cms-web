@@ -1,0 +1,10 @@
+# 数据文件（永不提交：里面是真实学生信息）
+stu_data.txt
+operation.log
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# PyCharm 配置
+.idea/

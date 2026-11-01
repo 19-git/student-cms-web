@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}修改学生{% endblock %}
+{% block content %}
+<h2>修改学生：{{ stu.name }}</h2>
+<form method="post" action="{{ url_for('edit_student', name=stu.name) }}">
+    <div class="form-group">
+        <label>姓名：</label>
+        <span>{{ stu.name }}</span>
+        <span style="color:#999">（姓名不可改；如需改名请删除后重新添加）</span>
+    </div>
+    <div class="form-group">
+        <label>性别：</label>
+        <select name="gender">
+            <option value="男" {% if stu.gender == '男' %}selected{% endif %}>男</option>
+            <option value="女" {% if stu.gender == '女' %}selected{% endif %}>女</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>年龄：</label>
+        <input name="age" value="{{ stu.age }}">
+    </div>
+    <div class="form-group">
+        <label>电话：</label>
+        <input name="phone" value="{{ stu.phone }}">
+    </div>
+    <div class="form-group">
+        <label>描述：</label>
+        <input name="desc" value="{{ stu.desc }}">
+    </div>
+    <button type="submit" class="btn btn-primary">保存</button>
+    <a class="btn btn-default" href="{{ url_for('student_list') }}">返回</a>
+</form>
+{% endblock %}
