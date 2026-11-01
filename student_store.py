@@ -8,6 +8,12 @@ import json                  # JSON 读写 stu_data.txt
 import datetime              # 日志时间戳
 from student import Student  # 学生数据模型 导入
 
+#代码文件所在目录的绝对路径（本地和线上服务器通用）
+#保证数据文件、日志始终生成在项目目录里，不会因为运行目录不同而找不到
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(BASE_DIR, 'stu_data.txt')
+LOG_FILE = os.path.join(BASE_DIR, 'operation.log')
+
 
 class StudentStore:
     #角色显示名映射：日志里显示"管理员/普通老师"，与控制台版格式保持一致
@@ -22,15 +28,15 @@ class StudentStore:
 
     #从 stu_data.txt 读取学生数据（文件存在且非空时才读）
     def load_student(self):
-        if os.path.exists('./stu_data.txt') and os.path.getsize('./stu_data.txt') > 0:
-            with open('./stu_data.txt', 'r', encoding='utf-8') as f:
+        if os.path.exists(DATA_FILE) and os.path.getsize(DATA_FILE) > 0:
+            with open(DATA_FILE, 'r', encoding='utf-8') as f:
                 stu_list = json.loads(f.read())
             #把 [字典, 字典, ...] 转成 [Student对象, Student对象, ...]
             self.stu_list = [Student(**d) for d in stu_list]
 
     #把学生列表写成 JSON 存回 stu_data.txt（Web 版：每次增删改后立即保存）
     def save_student(self):
-        with open('./stu_data.txt', 'w', encoding='utf-8') as f:
+        with open(DATA_FILE, 'w', encoding='utf-8') as f:
             f.write(json.dumps([s.__dict__ for s in self.stu_list],
                                ensure_ascii=False, indent=4))
 
@@ -39,7 +45,7 @@ class StudentStore:
     #追加一行到 operation.log（时间 | 操作 | 谁 | 详情）
     def write_log(self, content):
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        with open('./operation.log', 'a', encoding='utf-8') as f:
+        with open(LOG_FILE, 'a', encoding='utf-8') as f:
             f.write(f"{now} | {content}\n")
 
     #把角色代码转成中文显示名（admin→管理员，teacher→普通老师）
